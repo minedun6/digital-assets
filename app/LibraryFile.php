@@ -1,0 +1,47 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class LibraryFile extends Model
+{
+    protected $table = 'assets';
+
+    protected $casts = [
+        'is_deletable' => 'boolean'
+    ];
+
+    /**
+     * @return bool
+     */
+    public function getHasChildrenAttribute()
+    {
+        // need to change this so it doesn't autoload the children relation
+        return $this->children->count() > 0;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo(LibraryFile::class, 'parent_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children() {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+}
