@@ -47266,7 +47266,7 @@ exports = module.exports = __webpack_require__(42)(false);
 
 
 // module
-exports.push([module.i, "\n.tree-node.matched > .tree-content {\n    background: #f7f2e7;\n}\n", ""]);
+exports.push([module.i, "\n.tree-node.matched > .tree-content {\n    background: #f7f2e7;\n}\n.fa-md {\n    font-size: 1em !important;\n}\n", ""]);
 
 // exports
 
@@ -47792,18 +47792,44 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'assets-library',
+    mounted: function mounted() {
+        var treeAPI = this.$refs.tree.tree;
+
+        this.$refs.tree.$on('node:selected', function (node) {
+            treeAPI.loadChildren(node);
+        });
+    },
+
+    methods: {
+        handleMountedTree: function handleMountedTree(tree) {}
+    },
     data: function data() {
         return {
             fetchExample0: {
+                dnd: true,
                 fetchData: function fetchData(node) {
                     // return Promise object
                     return fetch('/tree?id=' + node.id).then(function (r) {
                         return r.json();
+                    }).then(function (items) {
+                        items.forEach(setData);
+
+                        function setData(item) {
+                            item.data = item;
+
+                            if (item.children) {
+                                item.children.forEach(setData);
+                            }
+                        }
+
+                        return items;
                     }).catch(function (e) {
                         return console.log(e);
                     });
@@ -47887,6 +47913,7 @@ var render = function() {
               _c("liquor-tree", {
                 ref: "tree",
                 attrs: { options: _vm.fetchExample0, filter: _vm.query },
+                on: { "tree:mounted": _vm.handleMountedTree },
                 scopedSlots: _vm._u([
                   {
                     key: "default",
@@ -47898,7 +47925,10 @@ var render = function() {
                         [
                           !node.hasChildren()
                             ? [
-                                _c("i", { class: node.data.icon }),
+                                _c("i", {
+                                  staticClass: "fa-md",
+                                  class: node.data.icon
+                                }),
                                 _vm._v(
                                   "\n                                " +
                                     _vm._s(node.text) +
@@ -47907,6 +47937,7 @@ var render = function() {
                               ]
                             : [
                                 _c("i", {
+                                  staticClass: "fa-md",
                                   class: [
                                     node.expanded()
                                       ? "far fa-folder-open"

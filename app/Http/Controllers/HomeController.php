@@ -37,7 +37,7 @@ class HomeController extends Controller
             );
         } else {
             return response()->json(
-                LibraryFile::with(['children', 'user'])->find(request('id'))->children
+                LibraryFile::with(['children', 'user'])->find(request('id'))->children()->orderBy('type_id')->get()
             );
         }
     }

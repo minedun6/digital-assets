@@ -38,17 +38,19 @@
                         <!-- load the tree here -->
                         <liquor-tree
                                 ref="tree"
+                                @tree:mounted="handleMountedTree"
                                 :options="fetchExample0"
                                 :filter="query"
                         >
                             <div class="tree-scope" slot-scope="{ node }">
                                 <template v-if="!node.hasChildren()">
-                                    <i :class="node.data.icon"></i>
+                                    <i :class="node.data.icon" class="fa-md"></i>
                                     {{ node.text }}
                                 </template>
 
                                 <template v-else>
-                                    <i :class="[node.expanded() ? 'far fa-folder-open' : 'far fa-folder']"></i>
+                                    <i :class="[node.expanded() ? 'far fa-folder-open' : 'far fa-folder']"
+                                       class="fa-md"></i>
                                     {{ node.text }}
                                 </template>
                             </div>
@@ -65,12 +67,39 @@
 
     export default {
         name: 'assets-library',
+        mounted() {
+            const treeAPI = this.$refs.tree.tree;
+
+            this.$refs.tree.$on('node:selected', node => {
+                treeAPI.loadChildren(node)
+            })
+        },
+        methods: {
+            handleMountedTree: (tree) => {
+
+            }
+        },
         data: function () {
             return {
                 fetchExample0: {
+                    dnd: true,
                     fetchData(node) {
                         // return Promise object
-                        return fetch(`/tree?id=${node.id}`).then(r => r.json()).catch(e => console.log(e))
+                        return fetch(`/tree?id=${node.id}`)
+                            .then(r => r.json())
+                            .then(items => {
+                                items.forEach(setData)
+
+                                function setData(item) {
+                                    item.data = item
+
+                                    if (item.children) {
+                                        item.children.forEach(setData)
+                                    }
+                                }
+
+                                return items
+                            }).catch(e => console.log(e))
                     }
                 },
                 query: ''
@@ -85,5 +114,9 @@
 <style>
     .tree-node.matched > .tree-content {
         background: #f7f2e7;
+    }
+
+    .fa-md {
+        font-size: 1em !important;
     }
 </style>

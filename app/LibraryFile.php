@@ -9,7 +9,8 @@ class LibraryFile extends Model
     protected $table = 'assets';
 
     protected $casts = [
-        'is_deletable' => 'boolean'
+        'is_deletable' => 'boolean',
+        'type_id' => 'integer'
     ];
 
     /**
@@ -41,7 +42,7 @@ class LibraryFile extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function children() {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')->orderBy('type_id');
     }
 
 }

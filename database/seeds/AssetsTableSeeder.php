@@ -21,16 +21,11 @@ class AssetsTableSeeder extends Seeder
     {
         User::all()->each(function ($user) {
 
-            $folders = LibraryFile::where([
-                'is_deletable' => true,
-                'type_id' => AssetType::Folder['value']
-            ])->get();
-
-            $start = rand(50, 100);
-            $end = rand($start, (100 + $start));
+            $start = rand(100, 300);
+            $end = rand($start, (300 + $start));
 
             foreach (range($start, $end) as $index) {
-                $parent = $folders->isEmpty() ? $user->personalFolder : $folders->random();
+                $parent = !is_null(LibraryFile::where(['is_deletable' => true, 'type_id' => AssetType::Folder['value']])->take(10)->inRandomOrder()->first()) ? LibraryFile::where(['is_deletable' => true, 'type_id' => AssetType::Folder['value']])->take(10)->inRandomOrder()->first() : $user->personalFolder;
                 factory(LibraryFile::class)->states('deletable', $type = strtolower(AssetType::getRandomKey()))->create([
                     'user_id' => $user->id,
                     'parent_id' => $parent->id,

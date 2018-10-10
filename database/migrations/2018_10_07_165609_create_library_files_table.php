@@ -23,7 +23,7 @@ class CreateLibraryFilesTable extends Migration
 			$table->string('url')->nullable();
 			$table->integer('level');
 			$table->string('icon');
-            $table->string('type_id');
+            $table->integer('type_id');
             $table->string('extension')->nullable();
             $table->string('mime_type')->nullable();
 			$table->integer('folder_flag')->default(3);
