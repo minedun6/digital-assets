@@ -21,8 +21,8 @@ class AssetsTableSeeder extends Seeder
     {
         User::all()->each(function ($user) {
 
-            $start = rand(100, 300);
-            $end = rand($start, (300 + $start));
+            $start = rand(10000, 30000);
+            $end = rand($start, (30000 + $start));
 
             foreach (range($start, $end) as $index) {
                 $parent = !is_null(LibraryFile::where(['is_deletable' => true, 'type_id' => AssetType::Folder['value']])->take(10)->inRandomOrder()->first()) ? LibraryFile::where(['is_deletable' => true, 'type_id' => AssetType::Folder['value']])->take(10)->inRandomOrder()->first() : $user->personalFolder;

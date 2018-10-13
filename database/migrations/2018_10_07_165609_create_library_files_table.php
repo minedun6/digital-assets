@@ -15,6 +15,7 @@ class CreateLibraryFilesTable extends Migration
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
 			$table->integer('user_id')->unsigned()->nullable();
 			$table->integer('parent_id')->unsigned()->nullable();
 			//$table->integer('original_node_id')->unsigned()->nullable();

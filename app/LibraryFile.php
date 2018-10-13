@@ -8,10 +8,22 @@ class LibraryFile extends Model
 {
     protected $table = 'assets';
 
+    protected $appends = [
+        'isRoot'
+    ];
+
     protected $casts = [
         'is_deletable' => 'boolean',
         'type_id' => 'integer'
     ];
+
+    /**
+     * @return bool
+     */
+    public function getIsRootAttribute()
+    {
+        return $this->parent_id === null;
+    }
 
     /**
      * @return bool

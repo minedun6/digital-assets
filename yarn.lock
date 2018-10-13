@@ -3154,9 +3154,9 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-liquor-tree@^0.2.36:
-  version "0.2.36"
-  resolved "https://registry.yarnpkg.com/liquor-tree/-/liquor-tree-0.2.36.tgz#f575e1bb84a6b26b3ddc4917a2428e5f8367b99d"
+liquor-tree@^0.2.37:
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/liquor-tree/-/liquor-tree-0.2.37.tgz#53133d9ec850020717fc93a9abdc08bf82d820fb"
 
 load-json-file@^1.0.0:
   version "1.1.0"

@@ -70,18 +70,21 @@
         mounted() {
             const treeAPI = this.$refs.tree.tree;
 
-            this.$refs.tree.$on('node:selected', node => {
+            this.$refs.tree.$on('node:dblclick', node => {
                 treeAPI.loadChildren(node)
             })
         },
         methods: {
             handleMountedTree: (tree) => {
+                let node = tree.getRootNode()
 
+                node.expand()
             }
         },
         data: function () {
             return {
                 fetchExample0: {
+                    minFetchDelay: 10000,
                     dnd: true,
                     fetchData(node) {
                         // return Promise object
@@ -112,6 +115,10 @@
 </script>
 
 <style>
+    .tree-children {
+        transition: unset;
+    }
+
     .tree-node.matched > .tree-content {
         background: #f7f2e7;
     }
