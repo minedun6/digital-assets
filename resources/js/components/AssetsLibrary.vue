@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
@@ -19,10 +19,10 @@
                                     </a>
 
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="#" @click.prevent="OpenAllNodes">
                                             Open All
                                         </a>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="#" @click.prevent="collapseAllNodes">
                                             Collapse All
                                         </a>
                                         <a class="dropdown-item" href="#">
@@ -37,10 +37,12 @@
                     <div class="card-body">
                         <!-- load the tree here -->
                         <liquor-tree
-                                ref="tree"
-                                @tree:mounted="handleMountedTree"
-                                :options="fetchExample0"
-                                :filter="query"
+                            ref="tree"
+                            @tree:mounted="handleMountedTree"
+                            @node:dblclick="handleStartEditingNode"
+                            @node:editing:stop="handleStopEditingNode"
+                            :options="treeOptions"
+                            :filter="query"
                         >
                             <div class="tree-scope" slot-scope="{ node }">
                                 <template v-if="!node.hasChildren()">
@@ -58,6 +60,9 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-8">
+                uploader
+            </div>
         </div>
     </div>
 </template>
@@ -70,22 +75,54 @@
         mounted() {
             const treeAPI = this.$refs.tree.tree;
 
-            this.$refs.tree.$on('node:dblclick', node => {
-                treeAPI.loadChildren(node)
-            })
+            this.$refs.tree.$on('node:expand', node => {
+                let rootNode = this.$refs.tree.getRootNode()
+                if (rootNode.id != node.id) {
+
+                    treeAPI.loadChildren(node)
+                }
+            });
+
         },
         methods: {
-            handleMountedTree: (tree) => {
-                let node = tree.getRootNode()
+            OpenAllNodes: () => {
+                console.log(this.$refs)
+                this.$refs.tree.tree.expandAll()
+            },
+            collapseAllNodes: () => {
+                this.$refs.tree.tree.collapseAll()
+            },
+            handleStartEditingNode: (node) => {
 
-                node.expand()
+                node.startEditing()
+
+            },
+            handleStopEditingNode: (node, isTextChanged) => {
+
+                if (isTextChanged) {
+                    // call api to rename node
+                }
+
+            },
+            handleMountedTree: (tree) => {
+                let rootNode = tree.getRootNode()
+                let firstChildNode = tree.find(n => n.id === rootNode.children[0].id)[0]
+
+                rootNode.expand()
+
+                window.setTimeout(_ => {
+                    firstChildNode.expand()
+                }, 500)
             }
         },
         data: function () {
             return {
-                fetchExample0: {
-                    minFetchDelay: 10000,
+                treeOptions: {
+                    minFetchDelay: 500,
                     dnd: true,
+                    filter: function (query) {
+                        return false
+                    },
                     fetchData(node) {
                         // return Promise object
                         return fetch(`/tree?id=${node.id}`)
@@ -95,6 +132,7 @@
 
                                 function setData(item) {
                                     item.data = item
+                                    item.isBatch = item.data.is_batch
 
                                     if (item.children) {
                                         item.children.forEach(setData)

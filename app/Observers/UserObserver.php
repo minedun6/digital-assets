@@ -17,34 +17,37 @@ class UserObserver
     public function created(User $user)
     {
         // get the user and create the necessary initial folders (Assets/My Assets/Shared with me)
-        $rootFolder = factory(LibraryFile::class)->states(
-            'non-deletable', 'folder'
-        )->create([
-            'user_id' => $user->id,
-            'parent_id' => null,
-            'text' => 'Assets',
-            'level' => 0
-        ]);
-
-        factory(LibraryFile::class)->states(
-            'non-deletable', 'folder'
-        )->create([
-            'user_id' => $user->id,
-            'parent_id' => $rootFolder->id,
-            'text' => 'My assets',
-            'level' => 1,
-            'folder_flag' => 1
-        ]);
-
-        factory(LibraryFile::class)->states(
-            'non-deletable', 'folder'
-        )->create([
-            'user_id' => $user->id,
-            'parent_id' => $rootFolder->id,
-            'text' => 'Shared with me',
-            'level' => 1,
-            'folder_flag' => 2
-        ]);
+//        $rootFolder = factory(LibraryFile::class)->states(
+//            'non-deletable', 'folder'
+//        )->create([
+//            'user_id' => $user->id,
+//            'parent_id' => null,
+//            'text' => 'Assets',
+//            'level' => 0,
+//            'is_batch' => false
+//        ]);
+//
+//        factory(LibraryFile::class)->states(
+//            'non-deletable', 'folder'
+//        )->create([
+//            'user_id' => $user->id,
+//            'parent_id' => $rootFolder->id,
+//            'text' => 'My assets',
+//            'level' => 1,
+//            'folder_flag' => 1,
+//            'is_batch' => true
+//        ]);
+//
+//        factory(LibraryFile::class)->states(
+//            'non-deletable', 'folder'
+//        )->create([
+//            'user_id' => $user->id,
+//            'parent_id' => $rootFolder->id,
+//            'text' => 'Shared with me',
+//            'level' => 1,
+//            'folder_flag' => 2,
+//            'is_batch' => true
+//        ]);
     }
 
     /**

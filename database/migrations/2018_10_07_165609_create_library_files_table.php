@@ -29,6 +29,7 @@ class CreateLibraryFilesTable extends Migration
             $table->string('mime_type')->nullable();
 			$table->integer('folder_flag')->default(3);
 			$table->boolean('is_deletable')->default(1);
+			$table->boolean('is_batch')->default(1);
 			$table->timestamps();
             $table->softDeletes();
             

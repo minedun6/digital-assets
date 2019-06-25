@@ -14,7 +14,8 @@ class LibraryFile extends Model
 
     protected $casts = [
         'is_deletable' => 'boolean',
-        'type_id' => 'integer'
+        'type_id' => 'integer',
+        'is_batch' => 'boolean'
     ];
 
     /**

@@ -47730,6 +47730,13 @@ module.exports = function normalizeComponent (
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_liquor_tree__ = __webpack_require__(47);
+var _this2 = this;
+
+//
+//
+//
+//
+//
 //
 //
 //
@@ -47800,25 +47807,58 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'assets-library',
     mounted: function mounted() {
+        var _this = this;
+
         var treeAPI = this.$refs.tree.tree;
 
-        this.$refs.tree.$on('node:dblclick', function (node) {
-            treeAPI.loadChildren(node);
+        this.$refs.tree.$on('node:expand', function (node) {
+            var rootNode = _this.$refs.tree.getRootNode();
+            if (rootNode.id != node.id) {
+
+                treeAPI.loadChildren(node);
+            }
         });
     },
 
     methods: {
-        handleMountedTree: function handleMountedTree(tree) {
-            var node = tree.getRootNode();
+        OpenAllNodes: function OpenAllNodes() {
+            console.log(_this2.$refs);
+            _this2.$refs.tree.tree.expandAll();
+        },
+        collapseAllNodes: function collapseAllNodes() {
+            _this2.$refs.tree.tree.collapseAll();
+        },
+        handleStartEditingNode: function handleStartEditingNode(node) {
 
-            node.expand();
+            node.startEditing();
+        },
+        handleStopEditingNode: function handleStopEditingNode(node, isTextChanged) {
+
+            if (isTextChanged) {
+                // call api to rename node
+            }
+        },
+        handleMountedTree: function handleMountedTree(tree) {
+            var rootNode = tree.getRootNode();
+            var firstChildNode = tree.find(function (n) {
+                return n.id === rootNode.children[0].id;
+            })[0];
+
+            rootNode.expand();
+
+            window.setTimeout(function (_) {
+                firstChildNode.expand();
+            }, 500);
         }
     },
     data: function data() {
         return {
-            fetchExample0: {
-                minFetchDelay: 10000,
+            treeOptions: {
+                minFetchDelay: 500,
                 dnd: true,
+                filter: function filter(query) {
+                    return false;
+                },
                 fetchData: function fetchData(node) {
                     // return Promise object
                     return fetch('/tree?id=' + node.id).then(function (r) {
@@ -47828,6 +47868,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                         function setData(item) {
                             item.data = item;
+                            item.isBatch = item.data.is_batch;
 
                             if (item.children) {
                                 item.children.forEach(setData);
@@ -47870,8 +47911,8 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-10" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-4" }, [
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [
             _c(
@@ -47905,7 +47946,79 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
-                  _vm._m(1)
+                  _c("div", { staticClass: "dropdown" }, [
+                    _c("a", {
+                      staticClass: "btn btn-secondary btn-sm dropdown-toggle",
+                      attrs: {
+                        href: "#",
+                        role: "button",
+                        id: "dropdownMenuLink",
+                        "data-toggle": "dropdown",
+                        "aria-haspopup": "true",
+                        "aria-expanded": "false"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "dropdown-menu",
+                        attrs: { "aria-labelledby": "dropdownMenuLink" }
+                      },
+                      [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "dropdown-item",
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.OpenAllNodes($event)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                                        Open All\n                                    "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            staticClass: "dropdown-item",
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.collapseAllNodes($event)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                                        Collapse All\n                                    "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            staticClass: "dropdown-item",
+                            attrs: { href: "#" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                                        Refresh\n                                    "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ])
                 ])
               ]
             )
@@ -47917,8 +48030,12 @@ var render = function() {
             [
               _c("liquor-tree", {
                 ref: "tree",
-                attrs: { options: _vm.fetchExample0, filter: _vm.query },
-                on: { "tree:mounted": _vm.handleMountedTree },
+                attrs: { options: _vm.treeOptions, filter: _vm.query },
+                on: {
+                  "tree:mounted": _vm.handleMountedTree,
+                  "node:dblclick": _vm.handleStartEditingNode,
+                  "node:editing:stop": _vm.handleStopEditingNode
+                },
                 scopedSlots: _vm._u([
                   {
                     key: "default",
@@ -47966,6 +48083,10 @@ var render = function() {
             1
           )
         ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-8" }, [
+        _vm._v("\n            uploader\n        ")
       ])
     ])
   ])
@@ -47979,51 +48100,6 @@ var staticRenderFns = [
       _c("i", { staticClass: "far fa-folder" }),
       _vm._v(
         "\n                            Digital Assets\n                        "
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c("a", {
-        staticClass: "btn btn-secondary btn-sm dropdown-toggle",
-        attrs: {
-          href: "#",
-          role: "button",
-          id: "dropdownMenuLink",
-          "data-toggle": "dropdown",
-          "aria-haspopup": "true",
-          "aria-expanded": "false"
-        }
-      }),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "dropdownMenuLink" }
-        },
-        [
-          _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-            _vm._v(
-              "\n                                        Open All\n                                    "
-            )
-          ]),
-          _vm._v(" "),
-          _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-            _vm._v(
-              "\n                                        Collapse All\n                                    "
-            )
-          ]),
-          _vm._v(" "),
-          _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-            _vm._v(
-              "\n                                        Refresh\n                                    "
-            )
-          ])
-        ]
       )
     ])
   }
